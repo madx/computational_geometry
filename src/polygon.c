@@ -29,25 +29,38 @@ void vertex_link (vertex *v1, vertex *v2) {
   v1->next = v2;
 }
 
-int vertex_chain_length (vertex *v) {
-  int l = 0;
-  vertex *tmp = v;
+vertex * vertex_last (vertex *v) {
+  vertex *t = v;
 
-  while (NULL != tmp) {
-    l++;
-    tmp = tmp->next;
-  }
+  while (t->next != NULL) t = t->next;
 
-  return l;
+  return t;
 }
 
-poly * poly_new (vertex *hull) {
+int vertex_chain_length (vertex *v) {
+  if (v == NULL) return 0;
+  return 1 + vertex_chain_length (v->next);
+}
+
+poly * poly_new () {
   poly *p;
 
   Alloc (p);
 
-  p->vertex_c = vertex_chain_length (hull);
-  p->hull = hull;
+  p->vertex_c = 0;
+  p->hull     = NULL;
+
+  return p;
+}
+
+poly * poly_from_list (int *l, int n) {
+  poly   *p;
+  int     i = 0;
+
+  p = poly_new ();
+
+  for (i = 0; i < 2*n; i += 2)
+    poly_add (p, vertex_new (l[i], l[i+1]));
 
   return p;
 }
@@ -58,9 +71,44 @@ void poly_free (poly *p) {
 }
 
 void poly_add (poly *p, vertex *v) {
-  vertex *last = p->hull;
+  if (NULL == p->hull)
+    p->hull = v;
+  else
+    vertex_link (vertex_last (p->hull), v);
 
-  while (NULL != last->next) last = last->next;
-  vertex_link (last, v);
   p->vertex_c++;
+}
+
+vertex * poly_nearest (poly *p, int x, int y) {
+  vertex *n = NULL,
+         *t = p->hull;
+
+  if (!p->hull) return n;
+
+  while (t) {
+    if (t->x >= x - 3 && t->x <= x + 3 &&
+        t->y >= y - 3 && t->y <= y + 3)
+      n = t;
+    t = t->next;
+  }
+
+  return n;
+}
+
+vertex * poly_lowest (poly *p) {
+  vertex *v, *l = p->hull;
+
+  for (v = p->hull; v != NULL; v = v->next)
+    if (v->y < l->y) l = v;
+
+  return l;
+}
+
+vertex * poly_highest (poly *p) {
+  vertex *v, *h = p->hull;
+
+  for (v = p->hull; v != NULL; v = v->next)
+    if (v->y > h->y) h = v;
+
+  return h;
 }

@@ -3,14 +3,14 @@ CC = gcc
 CFLAGS = -Wall -ansi -pedantic -lm
 GTKFLAGS = $(shell pkg-config --libs --cflags gtk+-2.0)
 ifeq (${DEBUG},1)
-	CFLAGS += -g
+	CFLAGS += -ggdb
 endif
 SRC = src/polygon.c
 OBJ = ${SRC:.c=.o}
 
 .PHONY: all clean env
 
-all: ${OBJ}
+all: gui
 
 polytest: ${OBJ}
 	@echo CC src/tests/polygon.c "->" dist/polygon_test

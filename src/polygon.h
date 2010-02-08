@@ -21,24 +21,26 @@ struct poly_t {
  * --------------------- */
 
 vertex * vertex_new   (int x, int y);
-void     vertex_free  (vertex *v);
-void     vertex_rfree (vertex *v);   /* Recursive free */
+vertex * vertex_last (vertex *v);
 
-/* link :: links two vertices */
-void   vertex_link    (vertex *v1, vertex *v2);
+void vertex_free  (vertex *v);
+void vertex_rfree (vertex *v);   /* Recursive free */
+void vertex_link  (vertex *v1, vertex *v2);
 
-/* chain_length :: returns the length of a vertex chain */
 int vertex_chain_length (vertex *v);
-
 
 /* --------------------- *
  * Functions on polygons *
  * --------------------- */
 
-poly * poly_new  (vertex *hull);
-void   poly_free (poly *p);
+poly * poly_new  ();
+poly * poly_from_list (int *list, int n);
 
-/* poly_add :: adds a vertex to the hull of a polygon */
+void poly_free (poly *p);
 void poly_add (poly *p, vertex *v);
+
+vertex * poly_nearest (poly *p, int x, int y);
+vertex * poly_lowest (poly *p);
+vertex * poly_highest (poly *p);
 
 #endif
