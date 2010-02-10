@@ -14,6 +14,20 @@ vertex * vertex_new (int x, int y) {
   return v;
 }
 
+vertex * vertex_dup (vertex *v) {
+  return vertex_new (v->x, v->y);
+}
+
+vertex * vertex_rdup (vertex *v) {
+  vertex *d;
+
+  if (NULL == v) return NULL;
+  d = vertex_dup (v);
+  d->next = vertex_rdup (v->next);
+
+  return d;
+}
+
 void vertex_free (vertex *v) {
   free (v);
   v = NULL;
@@ -42,6 +56,8 @@ int vertex_chain_length (vertex *v) {
   return 1 + vertex_chain_length (v->next);
 }
 
+/* ============ Polygons ============ */
+
 poly * poly_new () {
   poly *p;
 
@@ -51,6 +67,17 @@ poly * poly_new () {
   p->hull     = NULL;
 
   return p;
+}
+
+poly * poly_dup (poly *p) {
+  poly *d;
+
+  Alloc (d);
+
+  d->vertex_c = p->vertex_c;
+  d->hull     = vertex_rdup (p->hull);
+
+  return d;
 }
 
 poly * poly_from_list (int *l, int n) {

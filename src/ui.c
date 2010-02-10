@@ -236,20 +236,11 @@ void gui_draw_segments (gui *g) {
     gc_set_fg (g->gc, "#565248");
     if (NULL != v->next)
       gdk_draw_line (g->pixmap, g->gc, v->x, v->y, v->next->x, v->next->y);
+    else
+      gdk_draw_line (g->pixmap, g->gc, v->x, v->y, g->poly->hull->x, g->poly->hull->y);
     v = v->next;
   }
 }
-
-/* void gui_show_hovered (gui *g, int x, int y) { */
-/*   vertex *n; */
-/*  */
-/*   if ((n = poly_nearest (g->poly, x, y))) { */
-/*     gc_set_fg (g->gc, "#d6807a"); */
-/*     gdk_draw_arc (g->pixmap, g->gc, true, n->x - 3, n->y - 3, 7, 7, 0, 360*64); */
-/*   } */
-/*  */
-/*   gtk_widget_queue_draw (g->draw_zone); */
-/* } */
 
 /*=================*
  *   GC handling   *

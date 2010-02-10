@@ -21,12 +21,15 @@ struct poly_t {
  * --------------------- */
 
 vertex * vertex_new   (int x, int y);
-vertex * vertex_last (vertex *v);
+vertex * vertex_dup   (vertex *v);
+vertex * vertex_rdup  (vertex *v);
+vertex * vertex_last  (vertex *v);
 
 void vertex_free  (vertex *v);
 void vertex_rfree (vertex *v);   /* Recursive free */
 void vertex_link  (vertex *v1, vertex *v2);
 
+vertex * vertex_chain_reverse (vertex *v);
 int vertex_chain_length (vertex *v);
 
 /* --------------------- *
@@ -34,13 +37,14 @@ int vertex_chain_length (vertex *v);
  * --------------------- */
 
 poly * poly_new  ();
+poly * poly_dup  (poly *p);
 poly * poly_from_list (int *list, int n);
 
 void poly_free (poly *p);
-void poly_add (poly *p, vertex *v);
+void poly_add  (poly *p, vertex *v);
 
 vertex * poly_nearest (poly *p, int x, int y);
-vertex * poly_lowest (poly *p);
+vertex * poly_lowest  (poly *p);
 vertex * poly_highest (poly *p);
 
 #endif
