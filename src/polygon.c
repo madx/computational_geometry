@@ -106,6 +106,21 @@ void poly_add (poly *p, vertex *v) {
   p->vertex_c++;
 }
 
+void poly_remove (poly *p, vertex *v) {
+  vertex *b, *a;
+
+  b = poly_before (p, v);
+  a = poly_after  (p, v);
+
+  if (b && a) {
+    vertex_free (v);
+    vertex_link (b, a);
+  } else {
+    vertex_free (v);
+    p->hull = NULL;
+  }
+}
+
 vertex * poly_nearest (poly *p, int x, int y) {
   vertex *n = NULL,
          *t = p->hull;
@@ -120,6 +135,37 @@ vertex * poly_nearest (poly *p, int x, int y) {
   }
 
   return n;
+}
+
+vertex * poly_before (poly *p, vertex *v) {
+  vertex *n;
+
+  if (p->hull == v) {
+    if (v->next == NULL) return NULL;
+    else {
+      while (n->next != NULL) n = n->next;
+      return n;
+    }
+  }
+
+  for (n = p->hull; n->next != v; n = n->next);
+
+  return n;
+}
+
+vertex * poly_after (poly *p, vertex *v) {
+  vertex *n;
+
+  if (p->hull == v) {
+    if (v->next == NULL) return NULL;
+    else return v->next;
+  }
+
+  for (n = p->hull; n->next != v; n = n->next);
+  n = n->next;
+  if (!n->next) return p->hull;
+
+  return n->next;
 }
 
 vertex * poly_lowest (poly *p) {

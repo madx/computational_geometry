@@ -9,6 +9,7 @@ bool test_vertex_last         ();
 bool test_poly_add            ();
 bool test_poly_from_list      ();
 bool test_poly_bounds         ();
+bool test_poly_neighbors      ();
 
 int main (int argc, char *argv[]) {
   tstatus ts = {0, 0, true};
@@ -28,8 +29,11 @@ int main (int argc, char *argv[]) {
   unit ("poly_from_list :: builds a polygon from a list",
         test_poly_from_list, &ts);
 
-  unit ("poly_(lowest|highest) :: returns the right points",
+  unit ("poly_(lowest|highest) :: returns the right vertices",
         test_poly_bounds, &ts);
+
+  unit ("poly_(before|after) :: returns the right vertices",
+        test_poly_neighbors, &ts);
 
   return summary (ts);
 }
@@ -129,6 +133,28 @@ bool test_poly_bounds () {
 
   passed  = poly_lowest  (p) == p->hull;
   passed &= poly_highest (p) == p->hull->next->next;
+
+  return passed;
+}
+
+bool test_poly_neighbors () {
+  bool  passed;
+  int   square[] = {50, 50, 75, 75, 50, 100, 25, 75};
+  poly *p;
+
+  p = poly_from_list (square, 4);
+
+  passed  = poly_before (p, p->hull->next) == p->hull;
+  passed &= poly_before (p, p->hull)       == p->hull->next->next->next;
+  passed &= poly_after (p, p->hull)        == p->hull->next;
+  passed &= poly_after (p, p->hull->next->next->next) == p->hull;
+
+  poly_free (p);
+  p = poly_new ();
+  poly_add (p, vertex_new (0, 0));
+
+  passed &= poly_before (p, p->hull) == NULL;
+  passed &= poly_after  (p, p->hull) == NULL;
 
   return passed;
 }
