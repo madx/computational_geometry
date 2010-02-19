@@ -9,7 +9,8 @@ typedef struct test_status_t {
   bool ok;
 } tstatus;
 
-void unit (char *msg, bool (*test_func)(), tstatus *ts);
+void unit    (char *msg, tstatus *ts, void (*test_func)(tstatus *));
+void check   (char *msg, tstatus *ts, bool expr);
 bool summary (tstatus ts);
 
 #endif

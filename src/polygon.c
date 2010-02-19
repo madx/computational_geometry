@@ -10,50 +10,33 @@ vertex * vertex_new (int x, int y) {
   v->x = x;
   v->y = y;
   v->next = NULL;
+  v->prev = NULL;
 
   return v;
 }
 
-vertex * vertex_dup (vertex *v) {
-  return vertex_new (v->x, v->y);
-}
-
-vertex * vertex_rdup (vertex *v) {
-  vertex *d;
-
-  if (NULL == v) return NULL;
-  d = vertex_dup (v);
-  d->next = vertex_rdup (v->next);
-
-  return d;
-}
-
 void vertex_free (vertex *v) {
-  free (v);
-  v = NULL;
+  if (v) free (v);
 }
 
-void vertex_rfree (vertex *v) {
-  if (NULL != v->next)
-    vertex_rfree (v->next);
-  vertex_free (v);
+void vertex_free_r (vertex *v) {
+  if (v) {
+    vertex_free_r (v->next);
+    vertex_free   (v);
+  }
 }
 
 void vertex_link (vertex *v1, vertex *v2) {
   v1->next = v2;
+  v2->prev = v1;
 }
 
-vertex * vertex_last (vertex *v) {
-  vertex *t = v;
-
-  while (t->next != NULL) t = t->next;
-
-  return t;
-}
-
-int vertex_chain_length (vertex *v) {
-  if (v == NULL) return 0;
-  return 1 + vertex_chain_length (v->next);
+void vertex_print (vertex *v) {
+  printf ("[%9p] -> (% 2d,% 2d)[%9p] -> [%9p]\n",
+          (void *) v->prev,
+          v->x, v->y,
+          (void *) v,
+          (void *) v->next);
 }
 
 /* ============ Polygons ============ */
@@ -63,62 +46,49 @@ poly * poly_new () {
 
   Alloc (p);
 
-  p->vertex_c = 0;
-  p->hull     = NULL;
-
-  return p;
-}
-
-poly * poly_dup (poly *p) {
-  poly *d;
-
-  Alloc (d);
-
-  d->vertex_c = p->vertex_c;
-  d->hull     = vertex_rdup (p->hull);
-
-  return d;
-}
-
-poly * poly_from_list (int *l, int n) {
-  poly   *p;
-  int     i = 0;
-
-  p = poly_new ();
-
-  for (i = 0; i < 2*n; i += 2)
-    poly_add (p, vertex_new (l[i], l[i+1]));
+  p->size = 0;
+  p->hull = NULL;
+  p->last = NULL;
 
   return p;
 }
 
 void poly_free (poly *p) {
-  vertex_rfree (p->hull);
-  free (p);
+  if (p) {
+    vertex_free_r (p->hull);
+    free (p);
+    p = NULL;
+  }
 }
 
 void poly_add (poly *p, vertex *v) {
-  if (NULL == p->hull)
-    p->hull = v;
-  else
-    vertex_link (vertex_last (p->hull), v);
+  if (NULL == p->hull) {
+    p->hull = p->last = v;
+  } else {
+    vertex_link (p->last, v);
+    p->last = v;
+  }
 
-  p->vertex_c++;
+  p->size++;
 }
 
 void poly_remove (poly *p, vertex *v) {
-  vertex *b, *a;
+  if (v->prev == NULL && v->next == NULL) {
+    p->hull = p->last = NULL;
 
-  b = poly_before (p, v);
-  a = poly_after  (p, v);
+  } else if (v->prev == NULL) {
+    p->hull = v->next;
+    v->next->prev = NULL;
 
-  if (b && a) {
-    vertex_free (v);
-    vertex_link (b, a);
-  } else {
-    vertex_free (v);
-    p->hull = NULL;
-  }
+  } else if (v->next == NULL) {
+    p->last = v->prev;
+    v->prev->next = NULL;
+
+  } else vertex_link (v->prev, v->next);
+
+  v->prev = v->next = NULL;
+
+  p->size--;
 }
 
 vertex * poly_nearest (poly *p, int x, int y) {
@@ -137,51 +107,20 @@ vertex * poly_nearest (poly *p, int x, int y) {
   return n;
 }
 
-vertex * poly_before (poly *p, vertex *v) {
-  vertex *n;
-
-  if (p->hull == v) {
-    if (v->next == NULL) return NULL;
-    else {
-      while (n->next != NULL) n = n->next;
-      return n;
-    }
-  }
-
-  for (n = p->hull; n->next != v; n = n->next);
-
-  return n;
-}
-
-vertex * poly_after (poly *p, vertex *v) {
-  vertex *n;
-
-  if (p->hull == v) {
-    if (v->next == NULL) return NULL;
-    else return v->next;
-  }
-
-  for (n = p->hull; n->next != v; n = n->next);
-  n = n->next;
-  if (!n->next) return p->hull;
-
-  return n->next;
-}
-
-vertex * poly_lowest (poly *p) {
-  vertex *v, *l = p->hull;
-
-  for (v = p->hull; v != NULL; v = v->next)
-    if (v->y < l->y) l = v;
-
-  return l;
-}
-
-vertex * poly_highest (poly *p) {
-  vertex *v, *h = p->hull;
-
-  for (v = p->hull; v != NULL; v = v->next)
-    if (v->y > h->y) h = v;
-
-  return h;
-}
+/* vertex * poly_lowest (poly *p) { */
+/*   vertex *v, *l = p->hull; */
+/*  */
+/*   for (v = p->hull; v != NULL; v = v->next) */
+/*     if (v->y < l->y) l = v; */
+/*  */
+/*   return l; */
+/* } */
+/*  */
+/* vertex * poly_highest (poly *p) { */
+/*   vertex *v, *h = p->hull; */
+/*  */
+/*   for (v = p->hull; v != NULL; v = v->next) */
+/*     if (v->y > h->y) h = v; */
+/*  */
+/*   return h; */
+/* } */

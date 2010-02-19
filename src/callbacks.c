@@ -60,7 +60,13 @@ void gui_draw_zone_button_press (GtkWidget *w, GdkEventButton *e, gpointer data)
   switch (e->button) {
   case 1:
     if (g->hovered) {
-      g->selected = g->hovered;
+      if (g->ctrl) {
+        poly_remove (g->poly, g->hovered);
+        g->hovered = NULL;
+        gui_draw_all (g);
+      } else {
+        g->selected = g->hovered;
+      }
     } else {
       gui_add_vertex (g, e->x, e->y);
     }
@@ -77,6 +83,22 @@ void gui_draw_zone_button_release (GtkWidget *w, GdkEventButton *e, gpointer dat
   gui *g = data;
 
   g->selected = NULL;
+}
+
+void gui_draw_zone_key_press (GtkWidget *w, GdkEventKey *e, gpointer data) {
+  gui *g = data;
+
+  if (e->keyval == GDK_Control_L) {
+    gui_status_push (g, "Ctrl: click on a vertex to remove it");
+    g->ctrl = true;
+  }
+}
+
+void gui_draw_zone_key_release (GtkWidget *w, GdkEventKey *e, gpointer data) {
+  gui *g = data;
+
+  gui_status_pop (g);
+  g->ctrl = false;
 }
 
 void gui_show_menu (GtkWidget *w, gpointer data) {

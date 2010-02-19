@@ -3,59 +3,39 @@
 #include "base.h"
 #include "../src/polygon.h"
 
-bool test_vertex_link         ();
-bool test_vertex_chain_length ();
-bool test_vertex_last         ();
-bool test_poly_add            ();
-bool test_poly_from_list      ();
-bool test_poly_bounds         ();
-bool test_poly_neighbors      ();
+void test_vertex_new  (tstatus *ts);
+void test_vertex_link (tstatus *ts);
+void test_poly_new    (tstatus *ts);
+void test_poly_add    (tstatus *ts);
+void test_poly_remove (tstatus *ts);
 
 int main (int argc, char *argv[]) {
   tstatus ts = {0, 0, true};
 
-  unit ("vertex_link :: links two vertices",
-        test_vertex_link, &ts);
-
-  unit ("vertex_chain_length :: returns the length of a chain",
-        test_vertex_chain_length, &ts);
-
-  unit ("vertex_last :: returns the last vertex of a chain",
-        test_vertex_last, &ts);
-
-  unit ("poly_add :: adds a vertex to the hull of a polygon",
-        test_poly_add, &ts);
-
-  unit ("poly_from_list :: builds a polygon from a list",
-        test_poly_from_list, &ts);
-
-  unit ("poly_(lowest|highest) :: returns the right vertices",
-        test_poly_bounds, &ts);
-
-  unit ("poly_(before|after) :: returns the right vertices",
-        test_poly_neighbors, &ts);
+  unit ("vertex_new",  &ts, test_vertex_new);
+  unit ("vertex_link", &ts, test_vertex_link);
+  unit ("poly_new",    &ts, test_poly_new);
+  unit ("poly_add",    &ts, test_poly_add);
+  unit ("poly_remove", &ts, test_poly_remove);
 
   return summary (ts);
 }
 
-bool test_vertex_link () {
-  bool passed = false;
-  vertex *v1, *v2;
+void test_vertex_new (tstatus *ts) {
+  vertex *v;
 
-  v1 = vertex_new (0, 0);
-  v2 = vertex_new (0, 0);
+  v = vertex_new (0, 0);
 
-  vertex_link (v1, v2);
+  check ("initializes x and y", ts,
+          (v->x == 0) && (v->y == 0));
 
-  passed = (v1->next == v2);
+  check ("initializes next and prev to NULL", ts,
+          (v->next == NULL) && (v->prev == 0));
 
-  vertex_rfree (v1);
-
-  return passed;
+  vertex_free (v);
 }
 
-bool test_vertex_chain_length () {
-  bool passed = false;
+void test_vertex_link (tstatus *ts) {
   vertex *v1, *v2;
 
   v1 = vertex_new (0, 0);
@@ -63,98 +43,83 @@ bool test_vertex_chain_length () {
 
   vertex_link (v1, v2);
 
-  passed = (vertex_chain_length (v1) == 2);
+  check ("sets the next vertex", ts,
+         v1->next == v2);
+  check ("sets the prev vertex", ts,
+         v2->prev == v1);
 
-  vertex_rfree (v1);
-
-  return passed;
+  vertex_free (v1);
+  vertex_free (v2);
 }
 
-bool test_vertex_last () {
-  bool passed = false;
-  vertex *v1, *v2;
-
-  v1 = vertex_new (0, 0);
-  v2 = vertex_new (1, 1);
-
-  vertex_link (v1, v2);
-
-  passed = (vertex_last (v1) == v2);
-
-  vertex_rfree (v1);
-
-  return passed;
-}
-
-bool test_poly_add () {
-  bool passed = false;
-  vertex *v1, *v2;
-  poly   *p;
-
-  v1 = vertex_new (0, 0);
-  v2 = vertex_new (1, 1);
+void test_poly_new (tstatus *ts) {
+  poly *p;
 
   p = poly_new ();
+
+  check ("initializes the size to 0", ts,
+         p->size == 0);
+  check ("initializes hull and last to NULL", ts,
+         p->hull == NULL && p->last == NULL);
+
+  poly_free (p);
+}
+
+void test_poly_add (tstatus *ts) {
+  poly *p;
+  vertex *v1, *v2;
+
+  p  = poly_new ();
+  v1 = vertex_new (0, 0);
+  v2 = vertex_new (1, 1);
+
   poly_add (p, v1);
 
-  passed = (p->vertex_c == 1) && (p->hull == v1);
+  check ("the first vertex added is what *hull points to", ts,
+         p->hull == v1);
+  check ("the last vertex added is available with *last", ts,
+         p->last == v1);
 
   poly_add (p, v2);
 
-  passed &= (p->vertex_c == 2) && (v1->next == v2);
+  check ("when adding more vertices, the previous property holds", ts,
+         p->last == v2);
+
+  check ("polygon size increases when adding vertices", ts,
+         p->size == 2);
 
   poly_free (p);
-
-  return passed;
 }
 
-bool test_poly_from_list () {
-  bool  passed;
+void test_poly_remove (tstatus *ts) {
   poly *p;
-  int  square[] = {0, 0, 1, 0, 1, 1, 0, 1};
+  vertex *v1, *v2, *v3;
 
-  p = poly_from_list (square, 4);
+  p  = poly_new ();
+  poly_add (p, (v1 = vertex_new (0, 0)));
+  poly_add (p, (v2 = vertex_new (1, 1)));
+  poly_add (p, (v3 = vertex_new (2, 2)));
 
-  passed  = vertex_chain_length (p->hull) == 4;
-  passed &= p->hull->x == 0 && p->hull->y == 0;
-  passed &= vertex_last (p->hull)->y == 1;
+  poly_remove (p, v2);
+  check ("links previous and next if removing in the middle", ts,
+         v1->next == v3 && v3->prev == v1);
+  check ("updates the size", ts, p->size == 2);
 
-  poly_free (p);
+  poly_remove (p, v1);
+  check ("updates hull if removing the first", ts,
+         p->hull == v3 && v3->prev == NULL);
 
-  return passed;
-}
+  poly_add    (p, v1);
+  poly_remove (p, v1);
+  check ("updates last if removing the last", ts,
+         p->last == v3 && v1->next == NULL);
 
-bool test_poly_bounds () {
-  bool  passed;
-  int   square[] = {50, 50, 75, 75, 50, 100, 25, 75};
-  poly *p;
+  poly_remove (p, v3);
+  check ("the poly is now empty", ts,
+         p->hull == NULL && p->last == NULL && p->size == 0);
 
-  p = poly_from_list (square, 4);
-
-  passed  = poly_lowest  (p) == p->hull;
-  passed &= poly_highest (p) == p->hull->next->next;
-
-  return passed;
-}
-
-bool test_poly_neighbors () {
-  bool  passed;
-  int   square[] = {50, 50, 75, 75, 50, 100, 25, 75};
-  poly *p;
-
-  p = poly_from_list (square, 4);
-
-  passed  = poly_before (p, p->hull->next) == p->hull;
-  passed &= poly_before (p, p->hull)       == p->hull->next->next->next;
-  passed &= poly_after (p, p->hull)        == p->hull->next;
-  passed &= poly_after (p, p->hull->next->next->next) == p->hull;
-
-  poly_free (p);
-  p = poly_new ();
-  poly_add (p, vertex_new (0, 0));
-
-  passed &= poly_before (p, p->hull) == NULL;
-  passed &= poly_after  (p, p->hull) == NULL;
-
-  return passed;
+  poly_free   (p);
+  vertex_free (v1);
+  vertex_free (v2);
+  vertex_free (v3);
 }

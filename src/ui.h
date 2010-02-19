@@ -4,6 +4,7 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib/gprintf.h>
+#include <gdk/gdkkeysyms.h>
 
 #define PIXDIR "/home/madx/dev/L3/geometrie/images/"
 
@@ -12,6 +13,8 @@ typedef struct gui_t {
            m_split, m_mtr, m_rtr, m_hull, m_quit,
            m_clear, m_fit,
            m_sep1, m_sep2;
+
+  bool ctrl;
 
   poly   *poly;
 
@@ -37,6 +40,8 @@ void gui_draw_zone_configure (GtkWidget *w, GdkEventConfigure *e, gpointer data)
 void gui_draw_zone_motion_notify  (GtkWidget *w, GdkEventMotion *e, gpointer data);
 void gui_draw_zone_button_press   (GtkWidget *w, GdkEventButton *e, gpointer data);
 void gui_draw_zone_button_release (GtkWidget *w, GdkEventButton *e, gpointer data);
+void gui_draw_zone_key_press   (GtkWidget *w, GdkEventKey *e, gpointer data);
+void gui_draw_zone_key_release (GtkWidget *w, GdkEventKey *e, gpointer data);
 
 void gui_show_menu     (GtkWidget *w, gpointer data);
 void gui_menu_item_out (GtkWidget *w, gpointer data);
