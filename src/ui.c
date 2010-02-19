@@ -143,6 +143,35 @@ void gui_add_vertex (gui *g, int x, int y) {
   gui_draw_all (g);
 }
 
+/*=======================*
+ *   Algorithm helpers   *
+ *=======================*/
+
+void gui_algorithm_error (gui *g, char *name, char *msg) {
+  GString *s = g_string_new (name);
+
+  g_string_append_printf (s, ": %s", msg);
+  gui_status_push        (g, s->str);
+  g_string_free          (s, false);
+}
+
+bool gui_algorithm_req_poly (gui *g, char *name) {
+  if (g->poly->size < 3) {
+    gui_algorithm_error (g, name,
+                         "requires a valid polygon (at least 3 vertices)");
+    return true;
+  }
+
+  return false;
+}
+
+/*================*
+ *   Algorithms   *
+ *================*/
+
+void gui_split_algorithm (gui *g) {
+
+}
 
 /*=======================*
  *   Drawing functions   *

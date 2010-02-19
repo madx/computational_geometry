@@ -57,6 +57,14 @@ void gui_on_fit   (GtkWidget *w, gpointer data);
 /* Polygon handling */
 void gui_add_vertex (gui *g, int x, int y);
 
+/* Algorithm helpers */
+void gui_algorithm_error    (gui *g, char *name, char *msg);
+bool gui_algorithm_req_poly (gui *g, char *name);
+
+/* Algorithms */
+
+void gui_split_algorithm (gui *g);
+
 /* Drawing functions */
 void gui_draw_all        (gui *g);
 void gui_draw_background (gui *g);

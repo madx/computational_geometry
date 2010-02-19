@@ -64,13 +64,10 @@ void gui_draw_zone_button_press (GtkWidget *w, GdkEventButton *e, gpointer data)
         poly_remove (g->poly, g->hovered);
         g->hovered = NULL;
         gui_draw_all (g);
-      } else {
-        g->selected = g->hovered;
-      }
-    } else {
-      gui_add_vertex (g, e->x, e->y);
-    }
+      } else g->selected = g->hovered;
+    } else gui_add_vertex (g, e->x, e->y);
     break;
+
   case 3:
     gtk_menu_popup (g->menu, NULL, NULL, NULL, NULL, 1,
                     gtk_get_current_event_time ());
@@ -129,18 +126,28 @@ void gui_menu_item_in (GtkWidget *w, gpointer data) {
 
 void gui_on_split (GtkWidget *w, gpointer data) {
   gui *g = data;
+
+  if (gui_algorithm_req_poly (g, "Split")) return;
+
+  gui_split_algorithm (g);
 }
 
 void gui_on_mtr   (GtkWidget *w, gpointer data) {
   gui *g = data;
+
+  if (gui_algorithm_req_poly (g, "MTR")) return;
 }
 
 void gui_on_rtr   (GtkWidget *w, gpointer data) {
   gui *g = data;
+
+  if (gui_algorithm_req_poly (g, "MTR")) return;
 }
 
 void gui_on_hull  (GtkWidget *w, gpointer data) {
   gui *g = data;
+
+  if (gui_algorithm_req_poly (g, "MTR")) return;
 }
 
 void gui_on_clear (GtkWidget *w, gpointer data) {
