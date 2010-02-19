@@ -16,7 +16,7 @@ all: gui
 test_polygon: ${OBJ}
 	@echo Make binary "->" dist/polygon_test
 	@$(CC) $(CFLAGS) -o dist/polygon_test test/polygon.c test/base.c $^
-	@valgrind dist/polygon_test
+	@valgrind --leak-check=full --track-origins=yes dist/polygon_test
 
 gui: ${OBJ} ${UOBJ}
 	@echo Make binary "->" bin/polytool
