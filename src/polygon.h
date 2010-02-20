@@ -26,7 +26,9 @@ vertex * vertex_new (int x, int y);
 void vertex_free   (vertex *v);
 void vertex_free_r (vertex *v);
 void vertex_link   (vertex *v1, vertex *v2);
+void vertex_unlink (vertex *v1, vertex *v2);
 void vertex_print  (vertex *v);
+
 /* --------------------- *
  * Functions on polygons *
  * --------------------- */
@@ -37,9 +39,9 @@ void poly_free    (poly *p);
 
 void poly_add    (poly *p, vertex *v);
 void poly_remove (poly *p, vertex *v);
+void poly_print  (poly *p);
 
 vertex * poly_nearest (poly *p, int x, int y);
-
 vertex * poly_lowest  (poly *p);
 vertex * poly_highest (poly *p);
 

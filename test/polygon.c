@@ -3,17 +3,19 @@
 #include "base.h"
 #include "../src/polygon.h"
 
-void test_vertex_new  (tstatus *ts);
-void test_vertex_link (tstatus *ts);
-void test_poly_new    (tstatus *ts);
-void test_poly_add    (tstatus *ts);
-void test_poly_remove (tstatus *ts);
+void test_vertex_new    (tstatus *ts);
+void test_vertex_link   (tstatus *ts);
+void test_vertex_unlink (tstatus *ts);
+void test_poly_new      (tstatus *ts);
+void test_poly_add      (tstatus *ts);
+void test_poly_remove   (tstatus *ts);
 
 int main (int argc, char *argv[]) {
   tstatus ts = {0, 0, true};
 
   unit ("vertex_new",  &ts, test_vertex_new);
   unit ("vertex_link", &ts, test_vertex_link);
+  unit ("vertex_link", &ts, test_vertex_unlink);
   unit ("poly_new",    &ts, test_poly_new);
   unit ("poly_add",    &ts, test_poly_add);
   unit ("poly_remove", &ts, test_poly_remove);
@@ -47,6 +49,24 @@ void test_vertex_link (tstatus *ts) {
          v1->next == v2);
   check ("sets the prev vertex", ts,
          v2->prev == v1);
+
+  vertex_free (v1);
+  vertex_free (v2);
+}
+
+void test_vertex_unlink (tstatus *ts) {
+  vertex *v1, *v2;
+
+  v1 = vertex_new (0, 0);
+  v2 = vertex_new (1, 1);
+
+  check ("unsets the next vertex", ts,
+         v1->next == NULL);
+  check ("unsets the prev vertex", ts,
+         v2->prev == NULL);
+
+  vertex_link   (v1, v2);
+  vertex_unlink (v1, v2);
 
   vertex_free (v1);
   vertex_free (v2);

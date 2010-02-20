@@ -141,13 +141,15 @@ void gui_on_mtr   (GtkWidget *w, gpointer data) {
 void gui_on_rtr   (GtkWidget *w, gpointer data) {
   gui *g = data;
 
-  if (gui_algorithm_req_poly (g, "MTR")) return;
+  if (gui_algorithm_req_poly (g, "RTR")) return;
 }
 
 void gui_on_hull  (GtkWidget *w, gpointer data) {
   gui *g = data;
 
-  if (gui_algorithm_req_poly (g, "MTR")) return;
+  if (gui_algorithm_req_poly (g, "Graham")) return;
+
+  gui_convex_hull_algorithm (g);
 }
 
 void gui_on_clear (GtkWidget *w, gpointer data) {

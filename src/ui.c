@@ -2,7 +2,14 @@
 #include <stdio.h>
 #include "util.h"
 #include "polygon.h"
+#include "algorithms.h"
 #include "ui.h"
+
+struct colors_t Color = {
+  "#eae8e3", "#565248", "#80d67a", "#d6807a",
+  "#83694b", "#4b6983", "cyan",    "magenta",
+  "#7aabd6"
+};
 
 int main (int argc, char *argv[]) {
   gui g;
@@ -150,6 +157,14 @@ void gui_add_vertex (gui *g, int x, int y) {
 void gui_algorithm_error (gui *g, char *name, char *msg) {
   GString *s = g_string_new (name);
 
+  g_string_append_printf (s, ": [error] %s", msg);
+  gui_status_push        (g, s->str);
+  g_string_free          (s, false);
+}
+
+void gui_algorithm_info (gui *g, char *name, char *msg) {
+  GString *s = g_string_new (name);
+
   g_string_append_printf (s, ": %s", msg);
   gui_status_push        (g, s->str);
   g_string_free          (s, false);
@@ -165,28 +180,20 @@ bool gui_algorithm_req_poly (gui *g, char *name) {
   return false;
 }
 
-/*================*
- *   Algorithms   *
- *================*/
-
-void gui_split_algorithm (gui *g) {
-
-}
-
 /*=======================*
  *   Drawing functions   *
  *=======================*/
 
 void gui_draw_all (gui *g) {
   gui_draw_background (g);
-  gui_draw_segments   (g);
+  gui_draw_edges   (g);
   gui_draw_points     (g);
 
   gtk_widget_queue_draw (g->draw_zone);
 }
 
 void gui_draw_background (gui *g) {
-  gc_set_fg (g->gc, "#eae8e3");
+  gc_set_fg (g->gc, Color.background);
   gdk_draw_rectangle (g->pixmap, g->gc, true, 0, 0, -1, -1);
 }
 
@@ -198,25 +205,22 @@ void gui_draw_points (gui *g) {
 }
 
 void gui_draw_point (gui *g, vertex *v) {
-  char *color = (v == g->hovered)    ? "#d6807a":
-                (v == g->poly->last) ? "#4b6983":
-                                       "#80d67a";
+  char *color = (v == g->hovered)    ? Color.hover :
+                (v == g->poly->hull) ? Color.first :
+                (v == g->poly->last) ? Color.last  :
+                                       Color.normal;
 
-  gui_draw_vertex (g, v, color,     true);
-  gui_draw_vertex (g, v, "#7aabd6", false);
-
-  gtk_widget_queue_draw_area (g->draw_zone, v->x - 3, v->y - 3, 7, 7);
+  gui_draw_vertex (g, v, color, Color.outline);
 }
 
-void gui_draw_segments (gui *g) {
+void gui_draw_edges (gui *g) {
   vertex *v = g->poly->hull;
 
   while (v != NULL) {
-    gc_set_fg (g->gc, "#565248");
     if (NULL != v->next)
-      gdk_draw_line (g->pixmap, g->gc, v->x, v->y, v->next->x, v->next->y);
+      gui_draw_edge (g, v, v->next, Color.edge);
     else
-      gdk_draw_line (g->pixmap, g->gc, v->x, v->y, g->poly->hull->x, g->poly->hull->y);
+      gui_draw_edge (g, v, g->poly->hull, Color.edge);
     v = v->next;
   }
 }

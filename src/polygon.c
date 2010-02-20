@@ -31,6 +31,11 @@ void vertex_link (vertex *v1, vertex *v2) {
   v2->prev = v1;
 }
 
+void vertex_unlink (vertex *v1, vertex *v2) {
+  v1->next = NULL;
+  v2->prev = NULL;
+}
+
 void vertex_print (vertex *v) {
   printf ("[%9p] -> (% 2d,% 2d)[%9p] -> [%9p]\n",
           (void *) v->prev,
@@ -91,6 +96,19 @@ void poly_remove (poly *p, vertex *v) {
   p->size--;
 }
 
+void poly_print (poly *p) {
+  vertex *t;
+
+  printf ("[");
+  if (p->hull) {
+    printf ("(%d, %d)", p->hull->x, p->hull->y);
+    for (t = p->hull->next; t; t = t->next) {
+      printf (", (%d, %d)", t->x, t->y);
+    }
+  }
+  printf ("]\n");
+}
+
 vertex * poly_nearest (poly *p, int x, int y) {
   vertex *n = NULL,
          *t = p->hull;
@@ -107,20 +125,20 @@ vertex * poly_nearest (poly *p, int x, int y) {
   return n;
 }
 
-/* vertex * poly_lowest (poly *p) { */
-/*   vertex *v, *l = p->hull; */
-/*  */
-/*   for (v = p->hull; v != NULL; v = v->next) */
-/*     if (v->y < l->y) l = v; */
-/*  */
-/*   return l; */
-/* } */
-/*  */
-/* vertex * poly_highest (poly *p) { */
-/*   vertex *v, *h = p->hull; */
-/*  */
-/*   for (v = p->hull; v != NULL; v = v->next) */
-/*     if (v->y > h->y) h = v; */
-/*  */
-/*   return h; */
-/* } */
+vertex * poly_lowest (poly *p) {
+  vertex *v, *l = p->hull;
+
+  for (v = p->hull; v != NULL; v = v->next)
+    if (v->y > l->y) l = v;
+
+  return l;
+}
+
+vertex * poly_highest (poly *p) {
+  vertex *v, *h = p->hull;
+
+  for (v = p->hull; v != NULL; v = v->next)
+    if (v->y < h->y) h = v;
+
+  return h;
+}

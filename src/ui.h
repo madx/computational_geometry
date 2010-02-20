@@ -59,23 +59,34 @@ void gui_add_vertex (gui *g, int x, int y);
 
 /* Algorithm helpers */
 void gui_algorithm_error    (gui *g, char *name, char *msg);
+void gui_algorithm_info     (gui *g, char *name, char *msg);
 bool gui_algorithm_req_poly (gui *g, char *name);
 
 /* Algorithms */
 
-void gui_split_algorithm (gui *g);
+void gui_split_algorithm       (gui *g);
+void gui_convex_hull_algorithm (gui *g);
 
 /* Drawing functions */
 void gui_draw_all        (gui *g);
 void gui_draw_background (gui *g);
 void gui_draw_points     (gui *g);
 void gui_draw_point      (gui *g, vertex *v);
-#define gui_draw_vertex(g, v, c, f) \
+#define gui_draw_vertex(g, v, f, o) \
+  do {\
+    gc_set_fg (g->gc, f);\
+    gdk_draw_arc (g->pixmap, g->gc, true, v->x - 3, v->y - 3, 7, 7, 0, 360*64);\
+    gc_set_fg (g->gc, o);\
+    gdk_draw_arc (g->pixmap, g->gc, false, v->x - 3, v->y - 3, 7, 7, 0, 360*64);\
+    gtk_widget_queue_draw_area (g->draw_zone, v->x - 3, v->y - 3, 7, 7);\
+  } while (0)
+#define gui_draw_edge(g, v, w, c) \
   do {\
     gc_set_fg (g->gc, c);\
-    gdk_draw_arc (g->pixmap, g->gc, f, v->x - 3, v->y - 3, 7, 7, 0, 360*64);\
+    gdk_draw_line (g->pixmap, g->gc, v->x, v->y, w->x, w->y);\
+    gtk_widget_queue_draw (g->draw_zone);\
   } while (0)
-void gui_draw_segments   (gui *g);
+void gui_draw_edges   (gui *g);
 
 /* GC handling */
 void gc_set_fg   (GdkGC *gc, const char *spec);
@@ -85,5 +96,11 @@ void gc_set_bg   (GdkGC *gc, const char *spec);
 void gui_status_push (gui *g, char *message);
 void gui_status_pop  (gui *g);
 void gui_status_set  (gui *g, char *message);
+
+struct colors_t {
+  char *background, *edge, *normal, *hover,
+       *first,      *last, *high,   *low,
+       *outline;
+};
 
 #endif
