@@ -7,6 +7,7 @@ void test_stack_new  (tstatus *ts);
 void test_stack_push (tstatus *ts);
 void test_stack_pop  (tstatus *ts);
 void test_stack_peek (tstatus *ts);
+void test_stack_is_empty (tstatus *ts);
 
 int main (int argc, char *argv[]) {
   tstatus ts = {0, 0, true};
@@ -15,8 +16,11 @@ int main (int argc, char *argv[]) {
   unit ("stack_push", &ts, test_stack_push);
   unit ("stack_pop",  &ts, test_stack_pop);
   unit ("stack_peek", &ts, test_stack_peek);
+  unit ("stack_is_empty", &ts, test_stack_is_empty);
 
-  return summary (ts);
+  summary (ts);
+
+  return !!ts.failed;
 }
 
 void test_stack_new (tstatus *ts) {
@@ -57,8 +61,9 @@ void test_stack_pop (tstatus *ts) {
          stack_pop (s) == NULL);
 
   stack_push (s, &c);
-  check ("pops the item on top of the stack", ts,
-         ((char*) stack_pop (s) == &c) && s->cur == 0);
+  check ("returns the item on top of the stack", ts,
+         stack_pop (s) == &c);
+  check ("decreases the counter", ts, s->cur == 0);
 
   stack_free (s);
 }
@@ -73,6 +78,19 @@ void test_stack_peek (tstatus *ts) {
   stack_push (s, &c);
   check ("returns the item on top of the stack", ts,
          (char*) stack_peek (s) == &c);
+
+  stack_free (s);
+}
+
+void test_stack_is_empty (tstatus *ts) {
+  stack *s = stack_new (1);
+
+  check ("returns true if the stack is empty", ts,
+         stack_is_empty (s));
+
+  stack_push (s, &s);
+  check ("returns false if the stack is not empty", ts,
+         !stack_is_empty (s));
 
   stack_free (s);
 }

@@ -12,8 +12,9 @@ typedef struct test_status_t {
 #define unit(m,s,f) do { puts(m); f (s); } while (0)
 
 #define check(m,s,e) do {\
-  ((e) ? (s)->passed++ : (s)->failed++);\
-  ((e)\
+  bool p = e;\
+  ((p) ? (s)->passed++ : (s)->failed++);\
+  ((p)\
     ? puts ("  \033[32m+\033[0m " m)\
     : puts("  \033[31m-\033[0m " m " : \033[31m" __STRING(e) "\033[0m"));\
 } while (0)

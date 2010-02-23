@@ -33,7 +33,7 @@ void stack_push (stack *s, void *item) {
 }
 
 void * stack_peek (stack *s) {
-  if (s->cur == 0)
+  if (stack_is_empty (s))
     return NULL;
   else
     return s->items[s->cur - 1];
@@ -41,7 +41,11 @@ void * stack_peek (stack *s) {
 
 void * stack_pop (stack *s) {
   void * out = stack_peek (s);
-  if (s->cur != 0) s->cur--;
+  if (!stack_is_empty (s)) s->cur--;
 
   return out;
+}
+
+bool stack_is_empty (stack *s) {
+  return (s->cur == 0);
 }
