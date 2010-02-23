@@ -35,8 +35,7 @@ void vertex_print  (vertex *v);
 
 poly * poly_new ();
 
-void poly_free    (poly *p);
-
+void poly_free   (poly *p);
 void poly_add    (poly *p, vertex *v);
 void poly_remove (poly *p, vertex *v);
 void poly_print  (poly *p);

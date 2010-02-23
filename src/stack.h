@@ -1,0 +1,21 @@
+#ifndef STACK_H__
+#define STACK_H__
+
+#include "util.h"
+
+typedef struct stack_t {
+  void **items;
+  int    size;
+  int    cur;
+} stack;
+
+stack * stack_new (int size);
+
+void stack_free (stack *s);
+void stack_push (stack *s, void *item);
+
+void * stack_peek (stack *s);
+void * stack_pop  (stack *s);
+
+
+#endif

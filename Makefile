@@ -4,12 +4,12 @@ GTKFLAGS = $(shell pkg-config --libs --cflags gtk+-2.0)
 ifeq (${DEBUG},1)
 	CFLAGS += -ggdb
 endif
-SRC = src/polygon.c src/algorithms.c
+SRC = src/polygon.c src/stack.c src/algorithms.c
 OBJ = ${SRC:.c=.o}
 USRC = src/ui.c src/callbacks.c src/algo_split.c src/algo_hull.c
 UOBJ = ${USRC:.c=.o}
 
-.PHONY: all tests clean env
+.PHONY: all clean env
 
 all: gui
 
@@ -17,6 +17,11 @@ test_polygon: ${OBJ}
 	@echo Make binary "->" dist/polygon_test
 	@$(CC) $(CFLAGS) -o dist/polygon_test test/polygon.c test/base.c $^
 	@valgrind --leak-check=full --track-origins=yes dist/polygon_test
+
+test_stack: ${OBJ}
+	@echo Make binary "->" dist/stack_test
+	@$(CC) $(CFLAGS) -o dist/stack_test test/stack.c test/base.c $^
+	@valgrind --leak-check=full --track-origins=yes dist/stack_test
 
 gui: ${OBJ} ${UOBJ}
 	@echo Make binary "->" bin/polytool
