@@ -15,6 +15,23 @@ vertex * vertex_new (int x, int y) {
   return v;
 }
 
+vertex * vertex_dup (vertex *v) {
+  return vertex_new (v->x, v->y);
+}
+
+vertex * vertex_dup_r (vertex *v) {
+  if (v) {
+    vertex *d, *n;
+
+    d = vertex_dup (v);
+    if ((n = vertex_dup_r (v->next)))
+      vertex_link (d, n);
+
+    return d;
+
+  } else return NULL;
+}
+
 void vertex_free (vertex *v) {
   if (v) free (v);
 }
@@ -56,6 +73,16 @@ poly * poly_new () {
   p->last = NULL;
 
   return p;
+}
+
+poly * poly_dup (poly *p) {
+  poly   *d = poly_new ();
+  vertex *v;
+
+  for (v = p->hull; v != NULL; v = v->next)
+    poly_add (d, vertex_dup (v));
+
+  return d;
 }
 
 void poly_free (poly *p) {

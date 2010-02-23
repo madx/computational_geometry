@@ -21,7 +21,9 @@ struct poly_t {
  * Functions on vertices *
  * --------------------- */
 
-vertex * vertex_new (int x, int y);
+vertex * vertex_new   (int x, int y);
+vertex * vertex_dup   (vertex *v);
+vertex * vertex_dup_r (vertex *v);
 
 void vertex_free   (vertex *v);
 void vertex_free_r (vertex *v);
@@ -34,6 +36,7 @@ void vertex_print  (vertex *v);
  * --------------------- */
 
 poly * poly_new ();
+poly * poly_dup (poly *p);
 
 void poly_free   (poly *p);
 void poly_add    (poly *p, vertex *v);

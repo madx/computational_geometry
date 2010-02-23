@@ -16,12 +16,12 @@ all: gui
 
 test_polygon: ${OBJ}
 	@echo Make binary "->" dist/polygon_test
-	@$(CC) $(CFLAGS) -o dist/polygon_test test/polygon.c test/base.c $^
+	@$(CC) $(CFLAGS) -o dist/polygon_test test/polygon.c $^
 	@valgrind --leak-check=full --track-origins=yes dist/polygon_test
 
 test_stack: ${OBJ}
 	@echo Make binary "->" dist/stack_test
-	@$(CC) $(CFLAGS) -o dist/stack_test test/stack.c test/base.c $^
+	@$(CC) $(CFLAGS) -o dist/stack_test test/stack.c $^
 	@valgrind --leak-check=full --track-origins=yes dist/stack_test
 
 gui: ${OBJ} ${UOBJ}

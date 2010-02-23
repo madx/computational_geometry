@@ -9,8 +9,18 @@ typedef struct test_status_t {
   bool ok;
 } tstatus;
 
-void unit    (char *msg, tstatus *ts, void (*test_func)(tstatus *));
-void check   (char *msg, tstatus *ts, bool expr);
-bool summary (tstatus ts);
+#define unit(m,s,f) do { puts(m); f (s); } while (0)
+
+#define check(m,s,e) do {\
+  ((e) ? (s)->passed++ : (s)->failed++);\
+  ((e)\
+    ? puts ("  \033[32m+\033[0m " m)\
+    : puts("  \033[31m-\033[0m " m " : \033[31m" __STRING(e) "\033[0m"));\
+} while (0)
+
+#define summary(s) do {\
+  printf ("\n\033[32m%d\033[0m assertions passed\n", s.passed);\
+  printf ("\033[31m%d\033[0m assertions failed\n", s.failed);\
+} while(0);
 
 #endif
