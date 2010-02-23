@@ -15,8 +15,10 @@ stack * stack_new (int size) {
 }
 
 void stack_free (stack *s) {
-  free (s->items);
-  free (s);
+  if (s) {
+    free (s->items);
+    free (s);
+  }
 }
 
 void stack_push (stack *s, void *item) {
