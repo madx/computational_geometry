@@ -6,7 +6,8 @@ ifeq (${DEBUG},1)
 endif
 SRC = src/polygon.c src/stack.c src/algorithms.c
 OBJ = ${SRC:.c=.o}
-USRC = src/ui.c src/callbacks.c src/algo_split.c src/algo_hull.c
+USRC = src/ui.c src/callbacks.c src/algo_split.c src/algo_hull.c src/algo_rtr.c\
+       src/algo_mtr.c
 UOBJ = ${USRC:.c=.o}
 
 .PHONY: all clean env
@@ -51,5 +52,13 @@ src/algo_split.o: src/algo_split.c
 	@$(CC) -c $(CFLAGS) $(GTKFLAGS) -o $@ $<
 
 src/algo_hull.o: src/algo_hull.c
+	@echo CC $< "->" $@
+	@$(CC) -c $(CFLAGS) $(GTKFLAGS) -o $@ $<
+
+src/algo_mtr.o: src/algo_mtr.c
+	@echo CC $< "->" $@
+	@$(CC) -c $(CFLAGS) $(GTKFLAGS) -o $@ $<
+
+src/algo_rtr.o: src/algo_rtr.c
 	@echo CC $< "->" $@
 	@$(CC) -c $(CFLAGS) $(GTKFLAGS) -o $@ $<

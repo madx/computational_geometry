@@ -5,7 +5,7 @@
 #include "algorithms.h"
 #include "ui.h"
 
-void gui_convex_hull_algorithm (gui *g) {
+void gui_graham_convex_hull_algorithm (gui *g) {
   direction dir;
 
   if (g->poly->size == 3) {

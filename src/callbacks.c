@@ -129,19 +129,22 @@ void gui_on_split (GtkWidget *w, gpointer data) {
 
   if (gui_algorithm_req_poly (g, "Split")) return;
 
-  gui_split_algorithm (g);
+  gui_split_monotone_chains_algorithm (g);
 }
 
 void gui_on_mtr   (GtkWidget *w, gpointer data) {
   gui *g = data;
 
   if (gui_algorithm_req_poly (g, "MTR")) return;
+
+  gui_triangulate_monotone_algorithm (g);
 }
 
 void gui_on_rtr   (GtkWidget *w, gpointer data) {
   gui *g = data;
 
   if (gui_algorithm_req_poly (g, "RTR")) return;
+  gui_triangulate_regular_algorithm (g);
 }
 
 void gui_on_hull  (GtkWidget *w, gpointer data) {
@@ -149,7 +152,7 @@ void gui_on_hull  (GtkWidget *w, gpointer data) {
 
   if (gui_algorithm_req_poly (g, "Graham")) return;
 
-  gui_convex_hull_algorithm (g);
+  gui_graham_convex_hull_algorithm (g);
 }
 
 void gui_on_clear (GtkWidget *w, gpointer data) {
@@ -162,5 +165,7 @@ void gui_on_clear (GtkWidget *w, gpointer data) {
 
 void gui_on_fit   (GtkWidget *w, gpointer data) {
   gui *g = data;
+
+  puts ("Unimplemented");
 }
 

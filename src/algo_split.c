@@ -7,7 +7,7 @@
 
 extern struct colors_t Color;
 
-void gui_split_algorithm (gui *g) {
+void gui_split_monotone_chains_algorithm (gui *g) {
   vertex *lo, *hi, *t;
   direction dir;
 

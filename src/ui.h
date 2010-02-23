@@ -63,9 +63,10 @@ void gui_algorithm_info     (gui *g, char *name, char *msg);
 bool gui_algorithm_req_poly (gui *g, char *name);
 
 /* Algorithms */
-
-void gui_split_algorithm       (gui *g);
-void gui_convex_hull_algorithm (gui *g);
+void gui_split_monotone_chains_algorithm (gui *g);
+void gui_triangulate_monotone_algorithm  (gui *g);
+void gui_triangulate_regular_algorithm   (gui *g);
+void gui_graham_convex_hull_algorithm    (gui *g);
 
 /* Drawing functions */
 void gui_draw_all        (gui *g);
