@@ -46,6 +46,19 @@ void * stack_pop (stack *s) {
   return out;
 }
 
+void stack_print (stack *s) {
+  if (s) {
+    int i;
+
+    printf ("[");
+    for (i = 0; i < s->cur - 1; i++)
+      printf ("%p, ", s->items[i]);
+    if (i < s->cur)
+      printf ("%p", s->items[i]);
+    printf ("]\n");
+  }
+}
+
 bool stack_is_empty (stack *s) {
   return (s->cur == 0);
 }

@@ -43,6 +43,10 @@ src/polygon.o: src/polygon.c
 	@echo CC $< "->" $@
 	@$(CC) -c $(CFLAGS) -o $@ $<
 
+src/stack.o: src/stack.c
+	@echo CC $< "->" $@
+	@$(CC) -c $(CFLAGS) -o $@ $<
+
 src/algorithms.o: src/algorithms.c
 	@echo CC $< "->" $@
 	@$(CC) -c $(CFLAGS) -o $@ $<

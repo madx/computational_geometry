@@ -11,18 +11,20 @@ void test_poly_new      (tstatus *ts);
 void test_poly_dup      (tstatus *ts);
 void test_poly_add      (tstatus *ts);
 void test_poly_remove   (tstatus *ts);
+void test_poly_reverse  (tstatus *ts);
 
 int main (int argc, char *argv[]) {
   tstatus ts = {0, 0, true};
 
-  unit ("vertex_new",  &ts, test_vertex_new);
-  unit ("vertex_dup",  &ts, test_vertex_dup);
-  unit ("vertex_link", &ts, test_vertex_link);
-  unit ("vertex_link", &ts, test_vertex_unlink);
-  unit ("poly_new",    &ts, test_poly_new);
-  unit ("poly_dup",    &ts, test_poly_dup);
-  unit ("poly_add",    &ts, test_poly_add);
-  unit ("poly_remove", &ts, test_poly_remove);
+  unit ("vertex_new",   &ts, test_vertex_new);
+  unit ("vertex_dup",   &ts, test_vertex_dup);
+  unit ("vertex_link",  &ts, test_vertex_link);
+  unit ("vertex_link",  &ts, test_vertex_unlink);
+  unit ("poly_new",     &ts, test_poly_new);
+  unit ("poly_dup",     &ts, test_poly_dup);
+  unit ("poly_add",     &ts, test_poly_add);
+  unit ("poly_remove",  &ts, test_poly_remove);
+  unit ("poly_reverse", &ts, test_poly_reverse);
 
   summary (ts);
   return !!ts.failed;
@@ -190,4 +192,19 @@ void test_poly_remove (tstatus *ts) {
   vertex_free (v1);
   vertex_free (v2);
   vertex_free (v3);
+}
+
+void test_poly_reverse (tstatus *ts) {
+  poly *p = poly_new ();
+
+  poly_add (p, vertex_new (0, 0));
+  poly_add (p, vertex_new (1, 1));
+  poly_add (p, vertex_new (2, 2));
+
+  poly_reverse (p);
+
+  check ("reverses the list of points", ts,
+         p->hull->x == 2 && p->last->x == 0);
+
+  poly_free (p);
 }

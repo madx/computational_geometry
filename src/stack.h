@@ -17,6 +17,8 @@ void stack_push (stack *s, void *item);
 void * stack_peek (stack *s);
 void * stack_pop  (stack *s);
 
+void stack_print (stack *s);
+
 bool stack_is_empty (stack *s);
 
 #endif

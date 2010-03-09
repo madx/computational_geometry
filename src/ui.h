@@ -11,7 +11,7 @@
 typedef struct gui_t {
   gpointer window, vbox, status, draw_zone, box, menu,
            m_split, m_mtr, m_rtr, m_hull, m_quit,
-           m_clear, m_fit,
+           m_clear, m_draw,
            m_sep1, m_sep2;
 
   bool ctrl;
@@ -52,7 +52,7 @@ void gui_on_mtr   (GtkWidget *w, gpointer data);
 void gui_on_rtr   (GtkWidget *w, gpointer data);
 void gui_on_hull  (GtkWidget *w, gpointer data);
 void gui_on_clear (GtkWidget *w, gpointer data);
-void gui_on_fit   (GtkWidget *w, gpointer data);
+void gui_on_draw  (GtkWidget *w, gpointer data);
 
 /* Polygon handling */
 void gui_add_vertex (gui *g, int x, int y);
@@ -63,10 +63,12 @@ void gui_algorithm_info     (gui *g, char *name, char *msg);
 bool gui_algorithm_req_poly (gui *g, char *name);
 
 /* Algorithms */
-void gui_split_monotone_chains_algorithm (gui *g);
-void gui_triangulate_monotone_algorithm  (gui *g);
-void gui_triangulate_regular_algorithm   (gui *g);
-void gui_graham_convex_hull_algorithm    (gui *g);
+void gui_split_lr_chains_algorithm      (gui *g);
+void gui_triangulate_monotone_algorithm (gui *g);
+void gui_triangulate_regular_algorithm  (gui *g);
+void gui_graham_convex_hull_algorithm   (gui *g);
+
+void mtr_show_numbers (gui *g, vertex **l);
 
 /* Drawing functions */
 void gui_draw_all        (gui *g);

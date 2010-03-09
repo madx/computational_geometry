@@ -38,8 +38,7 @@ void gui_draw_zone_motion_notify (GtkWidget *w, GdkEventMotion *e, gpointer data
   vertex *old;
 
   if (g->selected) {
-    g->selected->x = e->x;
-    g->selected->y = e->y;
+    poly_update (g->poly, g->selected, e->x, e->y);
     gui_draw_all (g);
   } else {
     old      = g->hovered;
@@ -115,13 +114,13 @@ void gui_menu_item_in (GtkWidget *w, gpointer data) {
   gui *g = data;
 
   gui_status_set (g,
-      (g->m_split == w) ? "Split monotone chains"                      :
-      (g->m_mtr   == w) ? "Triangulate a monotone polygon"             :
-      (g->m_rtr   == w) ? "Triangulate a simple polygon"               :
-      (g->m_hull  == w) ? "Compute convex hull using Graham's Scan"    :
-      (g->m_clear == w) ? "Clear the drawing area"                     :
-      (g->m_fit   == w) ? "Adjust the polygon to fit the drawing area" :
-      (g->m_quit  == w) ? "Quit polytool"                              : "");
+      (g->m_split == w) ? "Split left and right chains"             :
+      (g->m_mtr   == w) ? "Triangulate a monotone polygon"          :
+      (g->m_rtr   == w) ? "Triangulate a simple polygon"            :
+      (g->m_hull  == w) ? "Compute convex hull using Graham's Scan" :
+      (g->m_clear == w) ? "Clear the drawing area"                  :
+      (g->m_draw  == w) ? "Redraw the polygon"                      :
+      (g->m_quit  == w) ? "Quit polytool"                           : "");
 }
 
 void gui_on_split (GtkWidget *w, gpointer data) {
@@ -129,7 +128,7 @@ void gui_on_split (GtkWidget *w, gpointer data) {
 
   if (gui_algorithm_req_poly (g, "Split")) return;
 
-  gui_split_monotone_chains_algorithm (g);
+  gui_split_lr_chains_algorithm (g);
 }
 
 void gui_on_mtr   (GtkWidget *w, gpointer data) {
@@ -163,9 +162,9 @@ void gui_on_clear (GtkWidget *w, gpointer data) {
   gui_draw_all (g);
 }
 
-void gui_on_fit   (GtkWidget *w, gpointer data) {
+void gui_on_draw (GtkWidget *w, gpointer data) {
   gui *g = data;
 
-  puts ("Unimplemented");
+  gui_draw_all (g);
 }
 

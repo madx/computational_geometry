@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "util.h"
 #include "polygon.h"
 #include "algorithms.h"
@@ -7,44 +8,37 @@
 
 extern struct colors_t Color;
 
-void gui_split_monotone_chains_algorithm (gui *g) {
-  vertex *lo, *hi, *t;
-  direction dir;
+void gui_split_lr_chains_algorithm (gui *g) {
+  vertex *left, *right, *t, *lend, *rend;
 
-  lo = poly_lowest  (g->poly);
-  hi = poly_highest (g->poly);
+  left  = poly_chain_left  (g->poly);
+  right = poly_chain_right (g->poly);
 
-  dir = poly_get_direction (g->poly);
-
-  gui_status_push (g, dir == CCW ? "Split: polygon drawn counter clock-wise":
-                                   "Split: polygon drawn clock-wise");
-
-  vertex_link (g->poly->last, g->poly->hull);
-
-  /* TODO: refactor: reverse the poly and use only two loops */
-  if (dir == CCW) {
-    for (t = lo; t != hi; t = t->next) {
+  for (t = left; t != NULL; t = t->next) {
+    if (t->next)
       gui_draw_edge (g, t, t->next, Color.low);
-      if (t != lo && t != hi) gui_draw_vertex (g, t, Color.normal, Color.outline);
-    }
-    for (t = lo; t != hi; t = t->prev) {
-      gui_draw_edge (g, t, t->prev, Color.high);
-      if (t != lo && t != hi) gui_draw_vertex (g, t, Color.normal, Color.outline);
-    }
-
-  } else {
-    for (t = lo; t != hi; t = t->next) {
-      gui_draw_edge (g, t, t->next, Color.high);
-      if (t != lo && t != hi) gui_draw_vertex (g, t, Color.normal, Color.outline);
-    }
-    for (t = lo; t != hi; t = t->prev) {
-      gui_draw_edge (g, t, t->prev, Color.low);
-      if (t != lo && t != hi) gui_draw_vertex (g, t, Color.normal, Color.outline);
-    }
+    else
+      lend = t;
+    gui_draw_vertex (g, t, Color.low, Color.outline);
   }
 
-  vertex_unlink (g->poly->last, g->poly->hull);
+  for (t = right; t != NULL; t = t->next) {
+    if (t->next)
+      gui_draw_edge (g, t, t->next, Color.high);
+    else
+      rend = t;
+    gui_draw_vertex (g, t, Color.high, Color.outline);
+  }
 
-  gui_draw_vertex (g, lo, Color.low,  Color.outline);
-  gui_draw_vertex (g, hi, Color.high, Color.outline);
+  gui_draw_edge (g, lend, rend,  Color.low);
+  gui_draw_edge (g, left, right, Color.high);
+  gui_draw_vertex (g, right, Color.high, Color.outline);
+  gui_draw_vertex (g, left,  Color.low,  Color.outline);
+  gui_draw_vertex (g, rend,  Color.high, Color.outline);
+  gui_draw_vertex (g, lend,  Color.low,  Color.outline);
+
+  for (t = left; t != NULL; t = t->next)
+    vertex_free (t);
+  for (t = right; t != NULL; t = t->next)
+    vertex_free (t);
 }

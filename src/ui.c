@@ -48,13 +48,13 @@ void gui_init (gui *g) {
   /* Context menu */
   g->menu = gtk_menu_new ();
 
-  g->m_split = gtk_menu_item_new_with_label ("Split monotone chains");
+  g->m_split = gtk_menu_item_new_with_label ("Split left/right chains");
   g->m_mtr   = gtk_menu_item_new_with_label ("Triangulate (monotone)");
   g->m_rtr   = gtk_menu_item_new_with_label ("Triangulate (generic)");
   g->m_hull  = gtk_menu_item_new_with_label ("Convex hull (Graham)");
   g->m_sep1  = gtk_separator_menu_item_new  ();
   g->m_clear = gtk_menu_item_new_with_label ("Clear");
-  g->m_fit   = gtk_menu_item_new_with_label ("Auto-fit");
+  g->m_draw  = gtk_menu_item_new_with_label ("Redraw");
   g->m_sep2  = gtk_separator_menu_item_new  ();
   g->m_quit  = gtk_menu_item_new_with_label ("Quit");
 
@@ -64,7 +64,7 @@ void gui_init (gui *g) {
   gtk_menu_append (g->menu, g->m_hull);
   gtk_menu_append (g->menu, g->m_sep1);
   gtk_menu_append (g->menu, g->m_clear);
-  gtk_menu_append (g->menu, g->m_fit);
+  gtk_menu_append (g->menu, g->m_draw);
   gtk_menu_append (g->menu, g->m_sep2);
   gtk_menu_append (g->menu, g->m_quit);
 
@@ -105,7 +105,7 @@ void gui_connect_signals (gui *g) {
   g_signal_connect (g->m_rtr,   "select", G_CALLBACK (gui_menu_item_in), g);
   g_signal_connect (g->m_hull,  "select", G_CALLBACK (gui_menu_item_in), g);
   g_signal_connect (g->m_clear, "select", G_CALLBACK (gui_menu_item_in), g);
-  g_signal_connect (g->m_fit,   "select", G_CALLBACK (gui_menu_item_in), g);
+  g_signal_connect (g->m_draw,   "select", G_CALLBACK (gui_menu_item_in), g);
   g_signal_connect (g->m_quit,  "select", G_CALLBACK (gui_menu_item_in), g);
 
   g_signal_connect (g->m_split, "deselect", G_CALLBACK (gui_menu_item_out), g);
@@ -113,7 +113,7 @@ void gui_connect_signals (gui *g) {
   g_signal_connect (g->m_rtr,   "deselect", G_CALLBACK (gui_menu_item_out), g);
   g_signal_connect (g->m_hull,  "deselect", G_CALLBACK (gui_menu_item_out), g);
   g_signal_connect (g->m_clear, "deselect", G_CALLBACK (gui_menu_item_out), g);
-  g_signal_connect (g->m_fit,   "deselect", G_CALLBACK (gui_menu_item_out), g);
+  g_signal_connect (g->m_draw,  "deselect", G_CALLBACK (gui_menu_item_out), g);
   g_signal_connect (g->m_quit,  "deselect", G_CALLBACK (gui_menu_item_out), g);
 
   g_signal_connect (g->m_quit,  "activate", G_CALLBACK (gui_quit),     g);
@@ -122,7 +122,7 @@ void gui_connect_signals (gui *g) {
   g_signal_connect (g->m_rtr,   "activate", G_CALLBACK (gui_on_rtr),   g);
   g_signal_connect (g->m_hull,  "activate", G_CALLBACK (gui_on_hull),  g);
   g_signal_connect (g->m_clear, "activate", G_CALLBACK (gui_on_clear), g);
-  g_signal_connect (g->m_fit,   "activate", G_CALLBACK (gui_on_fit),   g);
+  g_signal_connect (g->m_draw,  "activate", G_CALLBACK (gui_on_draw),   g);
 
   g_signal_connect (g->draw_zone, "configure_event",
                     G_CALLBACK (gui_draw_zone_configure), g);
@@ -186,7 +186,7 @@ bool gui_algorithm_req_poly (gui *g, char *name) {
 
 void gui_draw_all (gui *g) {
   gui_draw_background (g);
-  gui_draw_edges   (g);
+  gui_draw_edges      (g);
   gui_draw_points     (g);
 
   gtk_widget_queue_draw (g->draw_zone);
@@ -200,8 +200,11 @@ void gui_draw_background (gui *g) {
 void gui_draw_points (gui *g) {
   vertex *v = g->poly->hull;
 
-  for (v = g->poly->hull; v != NULL; v = v->next)
+  if (v) {
+    for (v = g->poly->hull; v != g->poly->last; v = v->next)
+      gui_draw_point (g, v);
     gui_draw_point (g, v);
+  }
 }
 
 void gui_draw_point (gui *g, vertex *v) {
@@ -214,14 +217,12 @@ void gui_draw_point (gui *g, vertex *v) {
 }
 
 void gui_draw_edges (gui *g) {
-  vertex *v = g->poly->hull;
+  vertex *v;
 
-  while (v != NULL) {
-    if (NULL != v->next)
+  if (g->poly->hull) {
+    for (v = g->poly->hull; v != g->poly->last; v = v->next)
       gui_draw_edge (g, v, v->next, Color.edge);
-    else
-      gui_draw_edge (g, v, g->poly->hull, Color.edge);
-    v = v->next;
+    gui_draw_edge (g, v, v->next, Color.edge);
   }
 }
 
