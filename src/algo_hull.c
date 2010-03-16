@@ -17,7 +17,6 @@ void gui_graham_convex_hull_algorithm (gui *g) {
   vertex  *t;
   stack   *s;
   int      i, pindex;
-  direction dir = poly_get_direction (g->poly);
 
   points = poly_to_array (g->poly);
   /* graham_show_names (g, points, g->poly->size); */
