@@ -70,22 +70,10 @@ void gui_graham_convex_hull_algorithm (gui *g) {
 }
 
 int graham_sort_points (const void *p1, const void *p2) {
-  double a1, a2, diff;
   vertex *v1 = *(vertex* const*) p1;
   vertex *v2 = *(vertex* const*) p2;
 
-  a1 = (v1->x - pivot->x) / (double) (v1->y - pivot->y);
-  a2 = (v2->x - pivot->x) / (double) (v2->y - pivot->y);
-
-  diff = a1 - a2;
-
-  if (diff < 0) {
-    return -1;
-  } else if (diff == 0) {
-
-  }
-
-  return 1;
+  return vertex_cross (pivot, v1, v2);
 }
 
 void graham_show_names (gui *g, vertex **points, int n) {
