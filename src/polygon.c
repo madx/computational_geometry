@@ -190,3 +190,17 @@ vertex * poly_lowest (poly *p) {
 vertex * poly_highest (poly *p) {
   return p->hi;
 }
+
+vertex ** poly_to_array (poly *p) {
+  vertex  *t;
+  vertex **arr;
+  int      i = 0;
+
+  AllocN(arr, p->size);
+
+  for (t = p->hull; t != p->last; t = t->next)
+    arr[i++] = vertex_dup (t);
+  arr[i] = vertex_dup (t);
+
+  return arr;
+}

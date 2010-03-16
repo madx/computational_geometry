@@ -18,4 +18,6 @@ void vertex_merge_lists    (vertex **m, vertex *l, vertex *r);
 bool vertex_chain_monotone (vertex *v1);
 int  vertex_cross          (vertex *v1, vertex *v2, vertex *v3);
 
+int graham_sort_points (const void *p1, const void *p2);
+
 #endif

@@ -52,4 +52,6 @@ vertex * poly_nearest (poly *p, int x, int y);
 vertex * poly_lowest  (poly *p);
 vertex * poly_highest (poly *p);
 
+vertex **poly_to_array (poly *p);
+
 #endif

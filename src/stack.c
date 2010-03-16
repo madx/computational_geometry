@@ -33,10 +33,14 @@ void stack_push (stack *s, void *item) {
 }
 
 void * stack_peek (stack *s) {
+  return stack_peekn (s, 1);
+}
+
+void * stack_peekn (stack *s, int n) {
   if (stack_is_empty (s))
     return NULL;
   else
-    return s->items[s->cur - 1];
+    return s->items[s->cur - (n)];
 }
 
 void * stack_pop (stack *s) {

@@ -13,8 +13,6 @@ void gui_triangulate_monotone_algorithm (gui *g) {
   vertex *left, *right, *t;
   stack  *s;
 
-  poly_print (g->poly);
-
   left  = poly_chain_left  (g->poly);
   right = poly_chain_right (g->poly);
 
