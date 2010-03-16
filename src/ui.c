@@ -8,7 +8,7 @@
 struct colors_t Color = {
   "#eae8e3", "#565248", "#80d67a", "#d6807a",
   "#83694b", "#4b6983", "cyan",    "magenta",
-  "#7aabd6"
+  "#7aabd6", "#88847a"
 };
 
 int main (int argc, char *argv[]) {

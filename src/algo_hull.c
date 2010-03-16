@@ -59,10 +59,10 @@ void gui_graham_convex_hull_algorithm (gui *g) {
   /* Dessin */
   while (s->cur > 1) {
     t = stack_pop (s);
-    gui_draw_edge (g, t, ((vertex*) stack_peek (s)), Color.outline);
-    gui_draw_vertex (g, t, Color.low, Color.outline);
+    gui_draw_edge (g, t, ((vertex*) stack_peek (s)), Color.hull);
+    gui_draw_vertex (g, t, Color.low, Color.hull);
   }
-  gui_draw_vertex (g, ((vertex*) stack_peek (s)), Color.low, Color.outline);
+  gui_draw_vertex (g, ((vertex*) stack_peek (s)), Color.low, Color.hull);
 
   stack_free (s);
   free (points);

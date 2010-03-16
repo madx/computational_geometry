@@ -103,7 +103,7 @@ void gui_status_set  (gui *g, char *message);
 struct colors_t {
   char *background, *edge, *normal, *hover,
        *first,      *last, *high,   *low,
-       *outline;
+       *outline,    *hull;
 };
 
 #endif
